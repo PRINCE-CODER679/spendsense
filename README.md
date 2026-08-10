@@ -238,57 +238,46 @@ This project is built incrementally across 10 phases:
 - `GET /api/dashboard/top-categories` - Get top spending categories
 - `GET /api/dashboard/month-comparison` - Compare current month with previous month
 
+### Budgets & Forecasts
+- `POST /api/budgets` - Create a new budget limit
+- `GET /api/budgets` - Get all budgets for a month/year
+- `GET /api/budgets/analysis/current` - Get budget performance analysis vs actual spending
+- `GET /api/forecast/categories` - Calculate spending forecast projections and risk levels
+
+### Insights & Anomalies
+- `GET /api/insights/` - Get aggregated spending insights (category, savings, projection)
+- `GET /api/insights/category` - Get category spending anomalies and patterns
+- `GET /api/insights/savings` - Get savings rate insights and benchmarks
+- `GET /api/insights/projection` - Get monthly spending projections
+- `GET /api/anomalies/` - Get statistical spending anomalies and alerts
+
+### AI Financial Assistant
+- `POST /api/assistant/chat` - Interactive financial query assistant (Gemini LLM + local fallback engine)
+
 ## Features
 
-### Implemented Features (Phases 1-5)
+### Implemented Features (Phases 1-10 - 100% Complete)
 - ✅ Manual transaction entry with form validation
 - ✅ Transaction management (create, read, update, delete)
 - ✅ Transaction search by description and merchant
 - ✅ Transaction filtering by category and type
 - ✅ Transaction sorting by date and amount
-- ✅ Transaction pagination
-- ✅ Professional transaction table with loading/empty states
-- ✅ Delete confirmation dialog
+- ✅ Transaction pagination & responsive table views
+- ✅ Delete confirmation dialog & bulk operations
 - ✅ MongoDB storage with optimized indexes
-- ✅ CSV and XLSX bank statement upload
-- ✅ Drag-and-drop file upload interface
+- ✅ CSV and XLSX bank statement upload with drag-and-drop
 - ✅ Automatic column detection and normalization
 - ✅ Support for multiple bank statement formats
-- ✅ Transaction preview before import
-- ✅ Edit transactions during preview
-- ✅ Duplicate transaction detection
-- ✅ Import confirmation with summary
-- ✅ Transaction source tracking (manual/imported)
-- ✅ Sample bank statement for testing
-- ✅ Rule-based categorization engine with merchant and keyword matching
-- ✅ Category confidence scoring system
-- ✅ Transaction categorization details (confidence, source, reason)
-- ✅ Automatic categorization during import
-- ✅ Manual category override protection
-- ✅ Bulk recategorization endpoint
-- ✅ Category summary API for spending totals
-- ✅ Color-coded category badges in frontend
-- ✅ Categorization details expansion in tables
-- ✅ Financial dashboard with summary cards
-- ✅ Total income, expenses, savings, and savings rate calculations
-- ✅ Category spending donut/pie chart
-- ✅ Income vs expenses bar chart
-- ✅ Daily spending area chart
-- ✅ Top spending categories with progress bars
-- ✅ Recent transactions display
-- ✅ Month selector for time-based filtering
-- ✅ Month-over-month spending comparison
-- ✅ MongoDB aggregation for efficient calculations
-- ✅ Responsive dashboard layout
-- ✅ Loading skeletons and error states
-- ✅ Empty state for no data scenarios
+- ✅ Transaction preview before import & duplicate detection
+- ✅ Rule-based categorization engine with confidence scoring
+- ✅ Financial dashboard with summary cards & interactive Recharts
+- ✅ Month selector & month-over-month spending comparison
+- ✅ **Phase 6: Budget Management & Tracking** (Overall & category budgets, visual progress bars, status thresholds)
+- ✅ **Phase 7: Spending Forecasting & Risk Engine** (Linear velocity projections, baseline comparisons, risk badges)
+- ✅ **Phase 8: Statistical Anomaly Detection & Insights** (Z-score unusual amounts, new categories, daily spikes)
+- ✅ **Phase 9: AI Financial Assistant** (Real-time financial context aggregator, Gemini LLM & fallback intent engine, chat UI)
+- ✅ **Phase 10: Settings, UI Polish, Error Handling & Production Deployment** (Currency preferences, Dark/Light theme, alert thresholds, JSON export/backup, Vercel/Render production configs, loading skeletons, error retry states)
 
-### Planned Features (Future Phases)
-- Budget management and tracking
-- Spending forecasting
-- Unusual expense detection
-- Personalized financial insights
-- AI financial assistant (optional)
 
 ### Security
 - No banking credentials stored

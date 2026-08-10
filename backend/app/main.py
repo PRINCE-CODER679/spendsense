@@ -19,13 +19,20 @@ app = FastAPI(
     version="1.0.0"
 )
 
+cors_origins = [
+    settings.FRONTEND_URL,
+    "http://localhost:5173",
+    "http://127.0.0.1:5173"
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[settings.FRONTEND_URL, "http://localhost:5173"],
+    allow_origins=cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 app.include_router(transactions_router)
 app.include_router(upload_router)
