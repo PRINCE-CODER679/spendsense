@@ -498,6 +498,16 @@ class InsightsService:
             "month": month
         }
 
+    async def get_all_insights(
+        self, 
+        user_id: str = "default_user", 
+        year: Optional[int] = None, 
+        month: Optional[int] = None
+    ) -> Dict[str, any]:
+        """Alias for generate_all_insights."""
+        return await self.generate_all_insights(user_id=user_id, year=year, month=month)
+
 
 # Global insights service instance
 insights_service = InsightsService()
+
