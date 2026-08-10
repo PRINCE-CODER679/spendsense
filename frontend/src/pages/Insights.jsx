@@ -55,13 +55,21 @@ const Insights = () => {
     setError(null);
     try {
       const [insightsData, forecastData, anomalyData] = await Promise.all([
-        insightsService.getAllInsights(currentYear, currentMonth),
+        insightsService.getAllInsights(currentYear, currentMonth).catch((e) => {
+          console.warn('Insights API call failed:', e);
+          return null;
+        }),
         forecastService.getForecastSummary(currentYear, currentMonth).catch(() => null),
         anomalyService.getAnomalySummary(currentYear, currentMonth).catch(() => null)
       ]);
-      setAllInsightsData(insightsData);
-      setForecastSummary(forecastData);
-      setAnomalySummary(anomalyData);
+
+      if (!insightsData && !forecastData && !anomalyData) {
+        setError('Unable to fetch spending insights. Please check backend status or CORS configuration and try again.');
+      } else {
+        setAllInsightsData(insightsData);
+        setForecastSummary(forecastData);
+        setAnomalySummary(anomalyData);
+      }
     } catch (err) {
       console.error('Failed to load insights:', err);
       setError('Failed to fetch spending insights. Please try again later.');
@@ -69,6 +77,7 @@ const Insights = () => {
       setIsLoading(false);
     }
   };
+
 
   const handlePreviousMonth = () => {
     if (currentMonth === 1) {

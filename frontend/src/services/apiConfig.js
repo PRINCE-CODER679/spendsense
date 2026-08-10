@@ -1,8 +1,4 @@
-/**
- * SpendSense AI - Centralized API Configuration
- * Uses Vite syntax (import.meta.env.VITE_API_BASE_URL) with fallback to
- * "https://spendsense-production-a33e.up.railway.app" if unconfigured.
- */
+import axios from 'axios';
 
 const getApiBaseUrl = () => {
   const envUrl = import.meta.env.VITE_API_BASE_URL;
@@ -21,4 +17,8 @@ const getApiBaseUrl = () => {
 
 export const API_BASE_URL = getApiBaseUrl();
 
+// Configure global axios defaults for headers
+axios.defaults.headers.common['Accept'] = 'application/json';
+
 export default API_BASE_URL;
+

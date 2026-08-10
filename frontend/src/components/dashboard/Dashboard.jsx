@@ -54,13 +54,13 @@ const Dashboard = () => {
       const [summaryData, categoryData, trendData, dailyData, topCatData, comparisonData, transactionsData, insightsData, budgetData, forecastData, anomalyData] = await Promise.all([
         dashboardService.getDashboardSummary(currentYear, currentMonth),
         dashboardService.getCategorySpending(currentYear, currentMonth),
-        dashboardService.getMonthlyTrend(6),
-        dashboardService.getDailySpending(currentYear, currentMonth),
-        dashboardService.getTopCategories(currentYear, currentMonth, 5),
-        dashboardService.getMonthComparison(currentYear, currentMonth),
-        transactionService.getTransactions({ limit: 5, sort_by: 'date', sort_order: 'desc' }),
-        insightsService.getAllInsights(currentYear, currentMonth),
-        budgetService.getBudgetAnalysis(currentYear, currentMonth),
+        dashboardService.getMonthlyTrend(6).catch(() => null),
+        dashboardService.getDailySpending(currentYear, currentMonth).catch(() => null),
+        dashboardService.getTopCategories(currentYear, currentMonth, 5).catch(() => null),
+        dashboardService.getMonthComparison(currentYear, currentMonth).catch(() => null),
+        transactionService.getTransactions({ limit: 5, sort_by: 'date', sort_order: 'desc' }).catch(() => ({ transactions: [] })),
+        insightsService.getAllInsights(currentYear, currentMonth).catch(() => null),
+        budgetService.getBudgetAnalysis(currentYear, currentMonth).catch(() => null),
         forecastService.getForecastSummary(currentYear, currentMonth).catch(() => null),
         anomalyService.getAnomalySummary(currentYear, currentMonth).catch(() => null)
       ]);
@@ -71,18 +71,19 @@ const Dashboard = () => {
       setDailySpending(dailyData);
       setTopCategories(topCatData);
       setMonthComparison(comparisonData);
-      setRecentTransactions(transactionsData.transactions);
+      setRecentTransactions(transactionsData?.transactions || []);
       setInsights(insightsData);
       setBudgetAnalysis(budgetData);
       setForecastSummary(forecastData);
       setAnomalySummary(anomalyData);
     } catch (err) {
-      setError('Failed to load dashboard data. Please try again later.');
-      console.error('Dashboard error:', err);
+      console.error('Dashboard fetch error:', err);
+      setError('Unable to connect to SpendSense backend service. Please check your backend status or CORS configuration and try again.');
     } finally {
       setIsLoading(false);
     }
   };
+
 
   const handlePreviousMonth = () => {
     if (currentMonth === 1) {
