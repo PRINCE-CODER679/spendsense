@@ -49,33 +49,46 @@ const Dashboard = () => {
   const fetchDashboardData = async () => {
     setIsLoading(true);
     setError(null);
+
+    const safeFetch = async (promise, fallback = null) => {
+      try {
+        return await promise;
+      } catch (err) {
+        console.warn('API call fallback:', err);
+        return fallback;
+      }
+    };
     
     try {
-      const [summaryData, categoryData, trendData, dailyData, topCatData, comparisonData, transactionsData, insightsData, budgetData, forecastData, anomalyData] = await Promise.all([
-        dashboardService.getDashboardSummary(currentYear, currentMonth),
-        dashboardService.getCategorySpending(currentYear, currentMonth),
-        dashboardService.getMonthlyTrend(6).catch(() => null),
-        dashboardService.getDailySpending(currentYear, currentMonth).catch(() => null),
-        dashboardService.getTopCategories(currentYear, currentMonth, 5).catch(() => null),
-        dashboardService.getMonthComparison(currentYear, currentMonth).catch(() => null),
-        transactionService.getTransactions({ limit: 5, sort_by: 'date', sort_order: 'desc' }).catch(() => ({ transactions: [] })),
-        insightsService.getAllInsights(currentYear, currentMonth).catch(() => null),
-        budgetService.getBudgetAnalysis(currentYear, currentMonth).catch(() => null),
-        forecastService.getForecastSummary(currentYear, currentMonth).catch(() => null),
-        anomalyService.getAnomalySummary(currentYear, currentMonth).catch(() => null)
-      ]);
+      const summaryRes = await safeFetch(dashboardService.getDashboardSummary(currentYear, currentMonth));
+      const categoryRes = await safeFetch(dashboardService.getCategorySpending(currentYear, currentMonth), {});
+      const trendRes = await safeFetch(dashboardService.getMonthlyTrend(6), []);
+      const dailyRes = await safeFetch(dashboardService.getDailySpending(currentYear, currentMonth), []);
+      const topCatRes = await safeFetch(dashboardService.getTopCategories(currentYear, currentMonth, 5), []);
+      const comparisonRes = await safeFetch(dashboardService.getMonthComparison(currentYear, currentMonth));
+      const transactionsRes = await safeFetch(transactionService.getTransactions({ limit: 5, sort_by: 'date', sort_order: 'desc' }), { transactions: [] });
+      const insightsRes = await safeFetch(insightsService.getAllInsights(currentYear, currentMonth));
+      const budgetRes = await safeFetch(budgetService.getBudgetAnalysis(currentYear, currentMonth));
+      const forecastRes = await safeFetch(forecastService.getForecastSummary(currentYear, currentMonth));
+      const anomalyRes = await safeFetch(anomalyService.getAnomalySummary(currentYear, currentMonth));
 
-      setSummary(summaryData);
-      setCategorySpending(categoryData);
-      setMonthlyTrend(trendData);
-      setDailySpending(dailyData);
-      setTopCategories(topCatData);
-      setMonthComparison(comparisonData);
-      setRecentTransactions(transactionsData?.transactions || []);
-      setInsights(insightsData);
-      setBudgetAnalysis(budgetData);
-      setForecastSummary(forecastData);
-      setAnomalySummary(anomalyData);
+      setSummary(summaryRes || {
+        total_income: 0.0,
+        total_expenses: 0.0,
+        total_savings: 0.0,
+        savings_rate: 0.0,
+        transaction_count: 0
+      });
+      setCategorySpending(categoryRes || {});
+      setMonthlyTrend(trendRes || []);
+      setDailySpending(dailyRes || []);
+      setTopCategories(topCatRes || []);
+      setMonthComparison(comparisonRes);
+      setRecentTransactions(transactionsRes?.transactions || []);
+      setInsights(insightsRes);
+      setBudgetAnalysis(budgetRes);
+      setForecastSummary(forecastRes);
+      setAnomalySummary(anomalyRes);
     } catch (err) {
       console.error('Dashboard fetch error:', err);
       setError('Unable to connect to SpendSense backend service. Please check your backend status or CORS configuration and try again.');
@@ -83,6 +96,7 @@ const Dashboard = () => {
       setIsLoading(false);
     }
   };
+
 
 
   const handlePreviousMonth = () => {
