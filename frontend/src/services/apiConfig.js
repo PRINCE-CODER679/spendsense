@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 const getApiBaseUrl = () => {
-  const envUrl = import.meta.env.VITE_API_BASE_URL;
-  const fallback = 'https://spendsense-production-a33e.up.railway.app';
+  const envUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL;
+  const fallback = 'https://spendsense-yeo0.onrender.com';
 
   const raw = envUrl && envUrl.trim() ? envUrl.trim() : fallback;
   const clean = raw.replace(/\/$/, '');
@@ -23,9 +23,13 @@ axios.defaults.headers.common['Accept'] = 'application/json';
 // Automatically attach Authorization Bearer header if token exists in localStorage
 axios.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token') || localStorage.getItem('access_token') || localStorage.getItem('auth_token');
-    if (token && !config.headers.Authorization) {
-      config.headers.Authorization = `Bearer ${token}`;
+    try {
+      const token = localStorage.getItem('token') || localStorage.getItem('access_token') || localStorage.getItem('auth_token');
+      if (token && typeof token === 'string' && token.trim() !== '' && !config.headers.Authorization) {
+        config.headers.Authorization = `Bearer ${token.trim()}`;
+      }
+    } catch (e) {
+      console.warn('Error reading auth token from localStorage:', e);
     }
     return config;
   },
