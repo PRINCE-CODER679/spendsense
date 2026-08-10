@@ -20,5 +20,16 @@ export const API_BASE_URL = getApiBaseUrl();
 // Configure global axios defaults for headers
 axios.defaults.headers.common['Accept'] = 'application/json';
 
-export default API_BASE_URL;
+// Automatically attach Authorization Bearer header if token exists in localStorage
+axios.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token') || localStorage.getItem('access_token') || localStorage.getItem('auth_token');
+    if (token && !config.headers.Authorization) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
+export default API_BASE_URL;
