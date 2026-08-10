@@ -1,0 +1,36 @@
+# Environment variables (secrets)
+.env
+.env.local
+**/.env
+**/.env.local
+
+# Node
+node_modules/
+dist/
+build/
+*.log
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+env/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Data
+backend/data/*.csv
+backend/data/*.xlsx
+!backend/data/.gitkeep
+!backend/data/sample_bank_statement.csv
