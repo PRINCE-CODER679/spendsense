@@ -20,21 +20,22 @@ app = FastAPI(
 )
 
 cors_origins = [
-    settings.FRONTEND_URL,
     "https://spendsense-psi-two.vercel.app",
     "http://localhost:5173",
+    "http://localhost:3000",
     "http://127.0.0.1:5173",
-    "http://localhost:3000"
+    settings.FRONTEND_URL
 ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=cors_origins,
-    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
+    expose_headers=["*"]
 )
+
 
 
 
