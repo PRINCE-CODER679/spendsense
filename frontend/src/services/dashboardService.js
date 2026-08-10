@@ -1,6 +1,6 @@
 import axios from 'axios';
+import { API_BASE_URL } from './apiConfig';
 
-const API_BASE_URL = '/api';
 
 export const dashboardService = {
   getDashboardSummary: async (year = null, month = null) => {
