@@ -5,7 +5,7 @@ import {
   Upload, 
   Wallet, 
   Lightbulb, 
-  MessageSquare, 
+  Bot, 
   Settings 
 } from 'lucide-react'
 
@@ -18,7 +18,7 @@ const Sidebar = () => {
     { path: '/upload', icon: Upload, label: 'Upload Statement' },
     { path: '/budgets', icon: Wallet, label: 'Budgets' },
     { path: '/insights', icon: Lightbulb, label: 'Insights' },
-    { path: '/assistant', icon: MessageSquare, label: 'AI Assistant' },
+    { path: '/assistant', icon: Bot, label: 'AI Assistant' },
     { path: '/settings', icon: Settings, label: 'Settings' },
   ]
 

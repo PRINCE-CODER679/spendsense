@@ -9,6 +9,7 @@ from app.api.insights import router as insights_router
 from app.api.budget import router as budget_router
 from app.api.forecast import router as forecast_router
 from app.api.anomalies import router as anomalies_router
+from app.api.assistant import router as assistant_router
 from app.services.transaction_service import transaction_service
 
 
@@ -33,6 +34,8 @@ app.include_router(insights_router)
 app.include_router(budget_router)
 app.include_router(forecast_router)
 app.include_router(anomalies_router)
+app.include_router(assistant_router)
+
 
 
 @app.on_event("startup")
