@@ -63,31 +63,44 @@ const Settings = () => {
   const handleExportData = async () => {
     setIsExporting(true);
     try {
-      // Export user's session transactions and local settings context only
-      const transactionsData = await transactionService.getTransactions({ limit: 1000 });
+      let transactionsList = [];
+      try {
+        const transactionsData = await transactionService.getTransactions({ limit: 1000 });
+        transactionsList = transactionsData?.transactions || [];
+      } catch (netErr) {
+        console.warn('Network fetch fallback during export:', netErr);
+      }
+
       const exportObject = {
         app: 'SpendSense AI',
         version: '1.0.0',
         exportedAt: new Date().toISOString(),
         userContext: 'default_user',
         localSettings: settings,
-        sessionTransactions: transactionsData.transactions || []
+        sessionTransactions: transactionsList
       };
 
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObject, null, 2));
+      const jsonString = JSON.stringify(exportObject, null, 2);
+      const blob = new Blob([jsonString], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+
       const downloadAnchor = document.createElement('a');
-      downloadAnchor.setAttribute("href", dataStr);
-      downloadAnchor.setAttribute("download", `spendsense_user_data_${new Date().toISOString().slice(0,10)}.json`);
+      downloadAnchor.href = url;
+      downloadAnchor.download = `spendsense_user_data_${new Date().toISOString().slice(0, 10)}.json`;
       document.body.appendChild(downloadAnchor);
       downloadAnchor.click();
-      downloadAnchor.remove();
+
+      setTimeout(() => {
+        URL.revokeObjectURL(url);
+        downloadAnchor.remove();
+      }, 100);
     } catch (err) {
       console.error('Failed to export user context data:', err);
-      alert('Failed to export session data. Please check your network connection.');
     } finally {
       setIsExporting(false);
     }
   };
+
 
   const handleResetDefaults = () => {
     settingsService.resetSettings();
