@@ -14,7 +14,7 @@ import Register from './pages/Register'
 
 function AppLayout() {
   return (
-    <div className="flex min-h-screen bg-slate-950 text-slate-100">
+    <div className="flex min-h-screen bg-gray-50 text-gray-900">
       <Sidebar />
       <main className="flex-1 ml-64 p-8 overflow-y-auto">
         <Routes>

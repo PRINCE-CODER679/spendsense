@@ -27,16 +27,16 @@ const Sidebar = () => {
   ]
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-64 bg-slate-900 border-r border-slate-800 shadow-xl flex flex-col justify-between z-20">
+    <aside className="fixed left-0 top-0 h-screen w-64 bg-white border-r border-gray-200 shadow-sm flex flex-col justify-between z-20">
       <div>
-        <div className="p-6 border-b border-slate-800/80">
+        <div className="p-6 border-b border-gray-100">
           <div className="flex items-center space-x-3">
             <div className="w-9 h-9 rounded-lg bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center shadow-md shadow-indigo-500/20">
               <span className="text-lg font-black text-white">S</span>
             </div>
             <div>
-              <h1 className="text-xl font-bold text-slate-100 tracking-tight">SpendSense AI</h1>
-              <p className="text-xs text-slate-400">Multi-User Finance</p>
+              <h1 className="text-xl font-bold text-gray-900 tracking-tight">SpendSense AI</h1>
+              <p className="text-xs text-gray-500">Smart Personal Finance</p>
             </div>
           </div>
         </div>
@@ -52,11 +52,11 @@ const Sidebar = () => {
                 to={item.path}
                 className={`flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-150 ${
                   isActive
-                    ? 'bg-indigo-600/15 text-indigo-400 border border-indigo-500/30 font-semibold shadow-inner'
-                    : 'text-slate-400 hover:bg-slate-800/60 hover:text-slate-200'
+                    ? 'bg-indigo-50 text-indigo-600 border border-indigo-100 font-semibold shadow-sm'
+                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                 }`}
               >
-                <Icon className={`w-5 h-5 mr-3 ${isActive ? 'text-indigo-400' : 'text-slate-400'}`} />
+                <Icon className={`w-5 h-5 mr-3 ${isActive ? 'text-indigo-600' : 'text-gray-400'}`} />
                 {item.label}
               </Link>
             )
@@ -65,17 +65,17 @@ const Sidebar = () => {
       </div>
 
       {/* User profile & Logout footer */}
-      <div className="p-4 border-t border-slate-800/80 bg-slate-950/40">
+      <div className="p-4 border-t border-gray-100 bg-gray-50/50">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3 overflow-hidden pr-2">
-            <div className="w-8 h-8 rounded-full bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 flex-shrink-0">
+            <div className="w-8 h-8 rounded-full bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 flex-shrink-0">
               <UserIcon className="w-4 h-4" />
             </div>
             <div className="truncate">
-              <p className="text-xs font-semibold text-slate-200 truncate">
+              <p className="text-xs font-semibold text-gray-900 truncate">
                 {user?.full_name || 'SpendSense User'}
               </p>
-              <p className="text-[11px] text-slate-400 truncate">
+              <p className="text-[11px] text-gray-500 truncate">
                 {user?.email || ''}
               </p>
             </div>
@@ -84,7 +84,7 @@ const Sidebar = () => {
           <button
             onClick={logout}
             title="Sign Out"
-            className="p-2 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors flex-shrink-0"
+            className="p-2 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors flex-shrink-0"
           >
             <LogOut className="w-4 h-4" />
           </button>

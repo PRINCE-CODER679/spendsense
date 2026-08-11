@@ -171,7 +171,7 @@ const Assistant = () => {
                 <div
                   className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm ${
                     isUser
-                      ? 'bg-slate-900 text-white'
+                      ? 'bg-indigo-600 text-white'
                       : 'bg-gradient-to-tr from-indigo-600 to-purple-600 text-white'
                   }`}
                 >
