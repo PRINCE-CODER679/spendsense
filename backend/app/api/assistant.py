@@ -2,10 +2,12 @@ import json
 import urllib.request
 import urllib.error
 from typing import List, Optional
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from app.config import settings
 from app.services.financial_summary import build_financial_context
+from app.api.deps import get_current_user
+from app.models.user import User
 
 router = APIRouter(prefix="/api/assistant", tags=["assistant"])
 
@@ -120,13 +122,16 @@ async def call_gemini_api(api_key: str, system_context: str, user_msg: str, hist
 
 
 @router.post("/chat", response_model=ChatResponse)
-async def chat_with_assistant(request: ChatRequest):
+async def chat_with_assistant(
+    request: ChatRequest,
+    current_user: User = Depends(get_current_user)
+):
     """
     POST /api/assistant/chat
-    Process user finance query using LLM (Gemini/OpenAI) or smart rule engine fallback.
+    Process user finance query using LLM (Gemini/OpenAI) or smart rule engine fallback for authenticated user.
     """
     try:
-        financial_context = await build_financial_context()
+        financial_context = await build_financial_context(user_id=str(current_user.id))
 
         # Default follow-up suggestions
         suggested_followups = [

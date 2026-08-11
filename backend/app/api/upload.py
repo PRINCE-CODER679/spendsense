@@ -1,26 +1,33 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException
+from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
 from app.services.statement_processor import statement_processor
 from app.services.transaction_service import transaction_service
 from app.schemas.upload import StatementPreviewResponse, ConfirmImportRequest, ConfirmImportResponse
 from app.schemas.transaction import TransactionCreate
+from app.api.deps import get_current_user
+from app.models.user import User
 
 router = APIRouter(prefix="/api/upload", tags=["upload"])
 
 
 @router.post("/statement", response_model=StatementPreviewResponse)
-async def preview_statement(file: UploadFile = File(...)):
-    """Preview uploaded bank statement before import."""
+async def preview_statement(
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_user)
+):
+    """Preview uploaded bank statement before import for authenticated user."""
     try:
         # Read file content
         file_content = await file.read()
         
-        # Get existing transaction fingerprints for duplicate detection
+        # Get existing transaction fingerprints for user's duplicate detection
         existing_fingerprints = set()
         try:
-            existing_transactions, _ = await transaction_service.get_transactions(limit=10000)
+            existing_transactions, _ = await transaction_service.get_transactions(
+                user_id=str(current_user.id),
+                limit=10000
+            )
             existing_fingerprints = {t.fingerprint if hasattr(t, 'fingerprint') else '' for t in existing_transactions}
         except Exception:
-            # If we can't get existing transactions, continue without duplicate check
             pass
         
         # Process the statement
@@ -37,12 +44,16 @@ async def preview_statement(file: UploadFile = File(...)):
 
 
 @router.post("/confirm", response_model=ConfirmImportResponse)
-async def confirm_import(request: ConfirmImportRequest):
-    """Confirm and import transactions from preview."""
+async def confirm_import(
+    request: ConfirmImportRequest,
+    current_user: User = Depends(get_current_user)
+):
+    """Confirm and import transactions from preview for authenticated user."""
     try:
         imported_count = 0
         skipped_count = 0
         errors = []
+        user_id_str = str(current_user.id)
         
         for transaction_data in request.transactions:
             # Skip duplicates and invalid transactions
@@ -68,9 +79,10 @@ async def confirm_import(request: ConfirmImportRequest):
                     category_reason=getattr(transaction_data, 'category_reason', None)
                 )
                 
-                # Create transaction with fingerprint and categorization data
+                # Create transaction with user_id and fingerprint
                 await transaction_service.create_transaction(
                     transaction_create,
+                    user_id=user_id_str,
                     fingerprint=transaction_data.fingerprint
                 )
                 imported_count += 1

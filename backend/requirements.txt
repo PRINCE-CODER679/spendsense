@@ -2,6 +2,7 @@ fastapi
 uvicorn[standard]
 pydantic
 pydantic-settings
+email-validator
 motor
 pymongo
 pandas
@@ -13,3 +14,4 @@ python-multipart
 google-generativeai
 python-dotenv
 certifi
+httpx

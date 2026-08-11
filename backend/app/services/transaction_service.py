@@ -16,7 +16,12 @@ class TransactionService:
             self._collection = mongodb.get_database().transactions
         return self._collection
 
-    async def create_transaction(self, transaction_data: TransactionCreate, user_id: str = "default_user", fingerprint: Optional[str] = None) -> Transaction:
+    async def create_transaction(
+        self,
+        transaction_data: TransactionCreate,
+        user_id: str,
+        fingerprint: Optional[str] = None
+    ) -> Transaction:
         transaction_dict = transaction_data.dict()
         transaction_dict["user_id"] = user_id
         transaction_dict["created_at"] = datetime.utcnow()
@@ -28,18 +33,18 @@ class TransactionService:
         
         return Transaction.from_dict(transaction_dict)
 
-    async def get_transaction(self, transaction_id: str) -> Optional[Transaction]:
+    async def get_transaction(self, transaction_id: str, user_id: str) -> Optional[Transaction]:
         if not ObjectId.is_valid(transaction_id):
             return None
         
-        transaction = await self.collection.find_one({"_id": ObjectId(transaction_id)})
+        transaction = await self.collection.find_one({"_id": ObjectId(transaction_id), "user_id": user_id})
         if transaction:
             return Transaction.from_dict(transaction)
         return None
 
     async def get_transactions(
         self,
-        user_id: str = "default_user",
+        user_id: str,
         skip: int = 0,
         limit: int = 20,
         search: Optional[str] = None,
@@ -79,7 +84,12 @@ class TransactionService:
         
         return [Transaction.from_dict(t) for t in transactions], total
 
-    async def update_transaction(self, transaction_id: str, transaction_data: Union[TransactionUpdate, dict]) -> Optional[Transaction]:
+    async def update_transaction(
+        self,
+        transaction_id: str,
+        transaction_data: Union[TransactionUpdate, dict],
+        user_id: str
+    ) -> Optional[Transaction]:
         if not ObjectId.is_valid(transaction_id):
             return None
         
@@ -92,19 +102,19 @@ class TransactionService:
         update_dict["updated_at"] = datetime.utcnow()
         
         result = await self.collection.update_one(
-            {"_id": ObjectId(transaction_id)},
+            {"_id": ObjectId(transaction_id), "user_id": user_id},
             {"$set": update_dict}
         )
         
-        if result.modified_count > 0:
-            return await self.get_transaction(transaction_id)
+        if result.matched_count > 0 or result.modified_count > 0:
+            return await self.get_transaction(transaction_id, user_id)
         return None
 
-    async def delete_transaction(self, transaction_id: str) -> bool:
+    async def delete_transaction(self, transaction_id: str, user_id: str) -> bool:
         if not ObjectId.is_valid(transaction_id):
             return False
         
-        result = await self.collection.delete_one({"_id": ObjectId(transaction_id)})
+        result = await self.collection.delete_one({"_id": ObjectId(transaction_id), "user_id": user_id})
         return result.deleted_count > 0
 
     async def create_indexes(self):

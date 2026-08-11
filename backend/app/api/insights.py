@@ -1,5 +1,7 @@
-from fastapi import APIRouter, Query, HTTPException
+from fastapi import APIRouter, Query, HTTPException, Depends
 from app.services.insights_service import insights_service
+from app.api.deps import get_current_user
+from app.models.user import User
 
 router = APIRouter(prefix="/api/insights", tags=["insights"])
 
@@ -7,12 +9,13 @@ router = APIRouter(prefix="/api/insights", tags=["insights"])
 @router.get("/")
 async def get_insights(
     year: int = Query(None),
-    month: int = Query(None, ge=1, le=12)
+    month: int = Query(None, ge=1, le=12),
+    current_user: User = Depends(get_current_user)
 ):
-    """Get all spending insights and projections."""
+    """Get all spending insights and projections for authenticated user."""
     try:
         insights = await insights_service.generate_all_insights(
-            user_id="default_user",
+            user_id=str(current_user.id),
             year=year,
             month=month
         )
@@ -24,12 +27,13 @@ async def get_insights(
 @router.get("/category")
 async def get_category_insights(
     year: int = Query(None),
-    month: int = Query(None, ge=1, le=12)
+    month: int = Query(None, ge=1, le=12),
+    current_user: User = Depends(get_current_user)
 ):
-    """Get category-specific insights."""
+    """Get category-specific insights for authenticated user."""
     try:
         category_insights = await insights_service.generate_category_insights(
-            user_id="default_user",
+            user_id=str(current_user.id),
             year=year,
             month=month
         )
@@ -45,12 +49,13 @@ async def get_category_insights(
 @router.get("/savings")
 async def get_savings_insights(
     year: int = Query(None),
-    month: int = Query(None, ge=1, le=12)
+    month: int = Query(None, ge=1, le=12),
+    current_user: User = Depends(get_current_user)
 ):
-    """Get savings-related insights."""
+    """Get savings-related insights for authenticated user."""
     try:
         savings_insights = await insights_service.generate_savings_insights(
-            user_id="default_user",
+            user_id=str(current_user.id),
             year=year,
             month=month
         )
@@ -66,12 +71,13 @@ async def get_savings_insights(
 @router.get("/projection")
 async def get_monthly_projection(
     year: int = Query(None),
-    month: int = Query(None, ge=1, le=12)
+    month: int = Query(None, ge=1, le=12),
+    current_user: User = Depends(get_current_user)
 ):
-    """Get monthly spending projection."""
+    """Get monthly spending projection for authenticated user."""
     try:
         projection = await insights_service.generate_monthly_projection_insight(
-            user_id="default_user",
+            user_id=str(current_user.id),
             year=year,
             month=month
         )
@@ -87,13 +93,14 @@ async def get_monthly_projection(
 @router.get("/forecast/summary")
 async def get_insights_forecast_summary(
     year: int = Query(None),
-    month: int = Query(None, ge=1, le=12)
+    month: int = Query(None, ge=1, le=12),
+    current_user: User = Depends(get_current_user)
 ):
-    """Get overall monthly spending forecast summary and risk matrix."""
+    """Get overall monthly spending forecast summary and risk matrix for authenticated user."""
     from app.services.forecast_service import forecast_service
     try:
         summary = await forecast_service.get_forecast_summary(
-            user_id="default_user",
+            user_id=str(current_user.id),
             year=year,
             month=month
         )
@@ -105,17 +112,17 @@ async def get_insights_forecast_summary(
 @router.get("/forecast/categories")
 async def get_insights_category_forecasts(
     year: int = Query(None),
-    month: int = Query(None, ge=1, le=12)
+    month: int = Query(None, ge=1, le=12),
+    current_user: User = Depends(get_current_user)
 ):
-    """Get category-level spending forecasts and budget prediction risks."""
+    """Get category-level spending forecasts and budget prediction risks for authenticated user."""
     from app.services.forecast_service import forecast_service
     try:
         forecasts = await forecast_service.get_category_forecasts(
-            user_id="default_user",
+            user_id=str(current_user.id),
             year=year,
             month=month
         )
         return forecasts
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to generate category forecasts: {str(e)}")
-

@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.database.mongodb import mongodb
+from app.api.auth import router as auth_router
 from app.api.transactions import router as transactions_router
 from app.api.upload import router as upload_router
 from app.api.dashboard import router as dashboard_router
@@ -11,6 +12,7 @@ from app.api.forecast import router as forecast_router
 from app.api.anomalies import router as anomalies_router
 from app.api.assistant import router as assistant_router
 from app.services.transaction_service import transaction_service
+from app.services.user_service import user_service
 
 
 app = FastAPI(
@@ -37,11 +39,7 @@ app.add_middleware(
     expose_headers=["*"]
 )
 
-
-
-
-
-
+app.include_router(auth_router)
 app.include_router(transactions_router)
 app.include_router(upload_router)
 app.include_router(dashboard_router)
@@ -52,11 +50,11 @@ app.include_router(anomalies_router)
 app.include_router(assistant_router)
 
 
-
 @app.on_event("startup")
 async def startup_db_client():
     try:
         await mongodb.connect()
+        await user_service.create_indexes()
         await transaction_service.create_indexes()
     except Exception as e:
         print(f"Warning: Could not connect to MongoDB: {e}")
@@ -81,7 +79,6 @@ async def root():
 async def health_check():
     from motor.motor_asyncio import AsyncIOMotorClient
     try:
-        # Use a short-timeout client just for the health ping
         probe_client = AsyncIOMotorClient(
             settings.MONGODB_URI,
             serverSelectionTimeoutMS=3000
